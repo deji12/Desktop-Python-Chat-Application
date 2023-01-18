@@ -5,7 +5,7 @@ from threading import Thread
 import time
 
 root = Tk()
-root.title("Frame")
+root.title("Desktop Chat App - THE PROTON GUY")
 root.iconbitmap('./icon.ico') # setting an icon
 root.config(background="#DAAD86")
 root.geometry("400x400") # default size of window
@@ -32,7 +32,7 @@ def LoginForm():
 
         root = messageBox
 
-        root.title('Proton.com . Wikipedia')
+        root.title('Messages- THE PROTON GUY')
 
         root.geometry('700x675')
         root.config(background="#DAAD86")
@@ -141,8 +141,6 @@ def LoginForm():
                         my_text.insert(0.0, f"{i['sender']} ->  {i['message']}\n\n")
                     else:
                         my_text.insert(0.0, f"|YOU| ->  {i['message']}\n\n")
-                    
-
 
         if __name__ == "__main__":
             

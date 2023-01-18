@@ -1,10 +1,6 @@
-import requests
-import json
+from password_generator import PasswordGenerator
 
-response = requests.get(
-    'https://desktopchat.onrender.com/test-room/tpg', 
-)
-
-result = json.loads(response.content)
-for i in result['messages']:
-    print(i['message'])
+pwo = PasswordGenerator()
+pwo.minlen = 10
+pwo.maxlen = 20
+print(pwo.generate())

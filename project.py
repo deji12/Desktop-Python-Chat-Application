@@ -3,10 +3,12 @@ import requests
 import json
 from threading import Thread
 import time
+from password_generator import PasswordGenerator
+import cryptocode
 
 root = Tk()
 root.title("Desktop Chat App - THE PROTON GUY")
-root.iconbitmap('./icon.ico') # setting an icon
+# root.iconbitmap('./icon.ico') # setting an icon
 root.config(background="#DAAD86")
 root.geometry("400x400") # default size of window
 
@@ -14,20 +16,30 @@ USERNAME = None
 ROOM = None
 
 def LoginForm():
+
+    pwo = PasswordGenerator()
+    pwo.minlen = 10
+    pwo.maxlen = 20
+    generated_key = pwo.generate()
+
     submit_form = requests.post(
-        'https://desktopchat.onrender.com/', 
+        'http://127.0.0.1:8000/', 
         data = {
             'username': username.get(),
-            'room': room.get()
+            'room': room.get(),
+            'key': generated_key
         },
     )
 
     USERNAME = username.get()
     ROOM = room.get()
 
+    KEY = None
+
     response = json.loads(submit_form.content)['success']
 
     if response == 'Room exists' or response == 'Room created successfully':
+
         messageBox = Toplevel()
 
         root = messageBox
@@ -63,18 +75,21 @@ def LoginForm():
 
         hor_scroll.config(command=my_text.xview)
 
-        #=====================================================================
+        #=====================================================================#
 
         get_messages = requests.get(
-            f'https://desktopchat.onrender.com/{room.get()}/{username.get}',  
+            f'http://127.0.0.1:8000/{room.get()}/{username.get}',  
         )
         messages = json.loads(get_messages.content)
 
+        if KEY == None:
+            KEY =  messages['key']
+
         for i in messages['messages']:
                 if i['sender'] != USERNAME:
-                    my_text.insert(0.0, f"{i['sender']} ->  {i['message']}\n\n")
+                    my_text.insert(0.0, f"{i['sender']} ->  {cryptocode.decrypt(i['message'], KEY)}\n\n")
                 else:
-                    my_text.insert(0.0, f"|YOU| ->  {i['message']}\n\n")
+                    my_text.insert(0.0, f"|YOU| ->  {cryptocode.decrypt(i['message'], KEY)}\n\n")
 
         # =================================================================================
 
@@ -92,25 +107,27 @@ def LoginForm():
 
         def sendMessage():
 
+            
+        
             send_new_message = requests.post(
-                f'https://desktopchat.onrender.com/{ROOM}/{USERNAME}/', 
+                f'http://127.0.0.1:8000/{ROOM}/{USERNAME}/', 
                 data = {
-                    'message': my_entry.get()
+                    'message': cryptocode.encrypt(my_entry.get(), KEY)
                 },
             )
 
             clear()
 
             get_messages = requests.get(
-                f'https://desktopchat.onrender.com/{room.get()}/{username.get}',  
+                f'http://127.0.0.1:8000/{room.get()}/{username.get}',  
             )
             messages = json.loads(get_messages.content)
 
             for i in messages['messages']:
                 if i['sender'] != USERNAME:
-                    my_text.insert(0.0, f"{i['sender']} ->  {i['message']}\n\n")
+                    my_text.insert(0.0, f"{i['sender']} ->  {cryptocode.decrypt(i['message'], KEY)}\n\n")
                 else:
-                    my_text.insert(0.0, f"|YOU| ->  {i['message']}\n\n")
+                    my_text.insert(0.0, f"|YOU| ->  {cryptocode.decrypt(i['message'], KEY)}\n\n")
 
 
         button_frame = Frame(root, background='#DAAD86')
@@ -131,16 +148,16 @@ def LoginForm():
             while True:
                 time.sleep(10)
                 get_messages = requests.get(
-                f'https://desktopchat.onrender.com/{room.get()}/{username.get}',  
+                f'http://127.0.0.1:8000/{room.get()}/{username.get}',  
                 )
                 messages = json.loads(get_messages.content)
 
                 my_text.delete(0.0, END)
                 for i in messages['messages']:
                     if i['sender'] != USERNAME:
-                        my_text.insert(0.0, f"{i['sender']} ->  {i['message']}\n\n")
+                        my_text.insert(0.0, f"{i['sender']} ->  {cryptocode.decrypt(i['message'], KEY)}\n\n")
                     else:
-                        my_text.insert(0.0, f"|YOU| ->  {i['message']}\n\n")
+                        my_text.insert(0.0, f"|YOU| ->  {cryptocode.decrypt(i['message'], KEY)}\n\n")
 
         if __name__ == "__main__":
             

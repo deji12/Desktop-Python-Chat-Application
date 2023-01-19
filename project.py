@@ -23,7 +23,7 @@ def LoginForm():
     generated_key = pwo.generate()
 
     submit_form = requests.post(
-        'http://127.0.0.1:8000/', 
+        'https://desktopchat.onrender.com/', 
         data = {
             'username': username.get(),
             'room': room.get(),
@@ -78,7 +78,7 @@ def LoginForm():
         #=====================================================================#
 
         get_messages = requests.get(
-            f'http://127.0.0.1:8000/{room.get()}/{username.get}',  
+            f'https://desktopchat.onrender.com/{room.get()}/{username.get}',  
         )
         messages = json.loads(get_messages.content)
 
@@ -110,7 +110,7 @@ def LoginForm():
             
         
             send_new_message = requests.post(
-                f'http://127.0.0.1:8000/{ROOM}/{USERNAME}/', 
+                f'https://desktopchat.onrender.com/{ROOM}/{USERNAME}/', 
                 data = {
                     'message': cryptocode.encrypt(my_entry.get(), KEY)
                 },
@@ -119,7 +119,7 @@ def LoginForm():
             clear()
 
             get_messages = requests.get(
-                f'http://127.0.0.1:8000/{room.get()}/{username.get}',  
+                f'https://desktopchat.onrender.com/{room.get()}/{username.get}',  
             )
             messages = json.loads(get_messages.content)
 
@@ -148,7 +148,7 @@ def LoginForm():
             while True:
                 time.sleep(10)
                 get_messages = requests.get(
-                f'http://127.0.0.1:8000/{room.get()}/{username.get}',  
+                f'https://desktopchat.onrender.com/{room.get()}/{username.get}',  
                 )
                 messages = json.loads(get_messages.content)
 
